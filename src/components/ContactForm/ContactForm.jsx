@@ -1,11 +1,12 @@
 import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import { FormStyle, ErrMessage, Lable, Btn } from './ContactForm.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { addContact } from 'redax/contactsSlice';
 
 const nameRegex =
   "^[a-zA-Zа-щьюяґєіїА-ЩЬЮЯҐЄІЇ]+(([' \\-][a-zA-Zа-щьюяґєіїА-ЩЬЮЯҐЄІЇ ])?[a-zA-Zа-щьюяґєіїА-ЩЬЮЯҐЄІЇ]*)*$";
-const phoneRegex =
-  '\\+?\\d{1,4}?[ .\\-\\s]?\\(?\\d{1,3}?\\)?[ .\\-\\s]?\\d{1,4}[ .\\-\\s]?\\d{1,4}[ .\\-\\s]?\\d{1,9}';
+const phoneRegex = '^([+]?[s0-9]+)?(d{3}|[(]?[0-9]+[)])?([-]?[s]?[0-9])+$';
 
 const contactSchema = Yup.object().shape({
   name: Yup.string()
@@ -20,7 +21,21 @@ const contactSchema = Yup.object().shape({
     .trim(),
 });
 
-export const ContactForm = ({ onAdd }) => {
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(state => state.contacts.list);
+  const isOnList = name => {
+    return contacts.find(
+      contact => contact.contact.name.toLowerCase() === name.toLowerCase()
+    );
+  };
+  const onAdd = contact => {
+    if (isOnList(contact.name)) {
+      alert(`${contact.name} is already in contacts`);
+    }
+    dispatch(addContact(contact));
+  };
+
   return (
     <Formik
       initialValues={{ name: '', number: '' }}
