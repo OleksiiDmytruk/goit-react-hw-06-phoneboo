@@ -24,14 +24,17 @@ const contactSchema = Yup.object().shape({
 export const ContactForm = () => {
   const dispatch = useDispatch();
   const contacts = useSelector(state => state.contacts.list);
+
   const isOnList = name => {
     return contacts.find(
       contact => contact.contact.name.toLowerCase() === name.toLowerCase()
     );
   };
+
   const onAdd = contact => {
     if (isOnList(contact.name)) {
       alert(`${contact.name} is already in contacts`);
+      return;
     }
     dispatch(addContact(contact));
   };
